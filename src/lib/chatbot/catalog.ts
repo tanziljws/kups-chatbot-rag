@@ -19,12 +19,12 @@ export type PublicWebsiteStats = { kups: number; products: number; destinations:
 
 const PRODUCT_TERMS = /\b(product|products|produk|produk-produk|barang|komoditas|madu|kopi|duren|durian|bambu|rotan|kerajinan|hasil\s+usaha|hasil\s+hutan\s+bukan\s+kayu|hhbk|oleh[- ]?oleh|dijual|jual)\b/i;
 const PRODUCT_CATEGORY_TERMS = /\b(product|products|produk|produk-produk|barang|komoditas|hasil\s+usaha|hasil\s+hutan\s+bukan\s+kayu|hhbk)\b/i;
-const TOURISM_TERMS = /\b(wisata|destinasi|ekowisata|homestay|penginapan|kunjungan|tiket)\b/i;
+const TOURISM_TERMS = /\b(wisata|destinasi|ekowisata|homestay|penginapan|kunjungan|tiket|tempat\s+rekreasi|objek\s+wisata)\b/i;
 const PUBLICATION_TERMS = /\b(publikasi|ebook|e-book|buku|bacaan|modul|unduhan|unduh|download)\b/i;
 const KUPS_TERMS = /\bkups\b/i;
 const KUPS_LIST_QUESTION = /\b(?:ada|cari|carikan|lihat|tampilkan|sebutkan)\b.{0,45}\bkups\b.{0,55}\b(?:apa\s+(?:aja|saja)|mana\s+(?:aja|saja)|terdaftar|di\s+mana|dimana)\b|\b(?:apa|mana)\s+(?:aja|saja)\b.{0,35}\bkups\b|\bkups\b.{0,55}\b(?:apa|mana)\s+(?:aja|saja)\b/i;
 const KUPS_COMMODITY_LOOKUP = /\b(?:kups)\b.{0,65}\b(?:madu|kopi|duren|durian|bambu|rotan|kerajinan|wisata|ekowisata)\b|\b(?:madu|kopi|duren|durian|bambu|rotan|kerajinan|wisata|ekowisata)\b.{0,65}\b(?:kups)\b/i;
-const KUPS_BENEFIT_QUESTION = /\b(?:manfaat(?:nya)?|keuntungan(?:nya)?|faedah(?:nya)?|untung(?:nya)?|dukungan|fasilitas|bantuan)\b.{0,100}\b(?:kups|usaha|daftar|jadi|bergabung|anggota)\b|\b(?:kups|anggota\s+kups)\b.{0,100}\b(?:manfaat(?:nya)?|keuntungan(?:nya)?|faedah(?:nya)?|untung(?:nya)?|dukungan|fasilitas|bantuan)\b|\bkups\b.{0,45}\b(?:bisa|dapat)\s+(?:membantu|bantu|mendukung)\b/i;
+const KUPS_BENEFIT_QUESTION = /\b(?:manfaat(?:nya)?|keuntungan(?:nya)?|faedah(?:nya)?|untung(?:nya)?|dukungan|fasilitas|bantuan)\b.{0,100}\b(?:kups|usaha|daftar|jadi|ikut(?:an)?|gabung|bergabung|anggota)\b|\b(?:kups|anggota\s+kups)\b.{0,100}\b(?:manfaat(?:nya)?|keuntungan(?:nya)?|faedah(?:nya)?|untung(?:nya)?|dukungan|fasilitas|bantuan)\b|\bkups\b.{0,45}\b(?:bisa|dapat)\s+(?:membantu|bantu|mendukung)\b/i;
 const KUPS_REGISTRATION_GUIDE = /\b(?:gimana|bagaimana|cara|langkah|prosedur|persyaratan|syarat(?:nya)?|pengajuan|ajukan|mulai)\b.{0,110}\b(?:daftar|daftarin|mendaftar|pendaftaran|mengajukan|pengajuan|ikut(?:an)?|bergabung|gabung|program|jadi)\b.{0,55}\b(?:kups|kelompok\s+usaha\s+perhutanan\s+sosial)\b|\b(?:kups|kelompok\s+usaha\s+perhutanan\s+sosial)\b.{0,75}\b(?:syarat|persyaratan|pengajuan|daftar|daftarin|mendaftar|pendaftaran|gabung|bergabung|ikutan|ikut)\b/i;
 const KUPS_KNOWLEDGE_QUESTION = /\bkups\b.{0,55}\b(?:apa|apaan|itu|tu|tuh|arti|pengertian|definisi|singkatan|kelas|syarat|persyaratan|manfaat|keuntungan|cara|prosedur|bagaimana|gimana|program|bantuan|dukungan|fasilitas)\b/i;
 const KUPS_DIRECTORY_ACTION = /\b(profil|profile|direktori|data|lokasi|lokasinya|alamat|wilayah|terdaftar|cari|carikan|tampilkan|sebutkan|informasi|info|sebaran)\b/i;
@@ -33,8 +33,8 @@ const NATIONAL_SCOPE = /\b(?:seluruh\s+indonesia|se-indonesia|nasional|seluruh\s
 const STAT_TERMS = /\b(berapa|jumlah|total|statistik)\b/i;
 const STAT_ENTITY_TERMS = /\b(kups|kelompok|produk|product|wisata|destinasi|provinsi)\b/i;
 const EXPLANATION_TERMS = /\b(manfaat|khasiat|kandungan|pengertian|definisi|arti|cara\s+(?:membuat|mengolah|memulai)|resep|tips)\b/i;
-const SEARCH_ACTIONS = /\b(ada|cari|carikan|tampilkan|lihat|cek|katalog|tersedia|daftar|terdaftar|mana|mana\s+aja|mana\s+saja|apa\s+aja|apa\s+ja|apa\s+saja|rekomendasikan|rekomendasi)\b/i;
-const SEARCH_FILLER = /\b(tolong|coba|sebutkan|carikan|cari|tampilkan|lihat|rekomendasikan|rekomendasi|menjual|dijual|menawarkan|memasarkan|pemasaran|apa|apaan|saja|aja|ja|ada|yang|di|dari|mana|dimana|kups|kelompok|saya|aku|gue|gw|mau|ingin|pengen|tahu|tau|dong|deh|sih|nih|tuh|tu|nanya|tanya|info|informasi|ttg|tentang|mengenai|untuk|apakah|website|situs|web|ini|publik|product|products|produk|produk-produk|nya|barang|komoditas|hasil\s+usaha|katalog|profil|profile|direktori|data|lokasi|lokasinya|alamat|wilayah|terdaftar|sebaran|berada|kabupaten|kab|kota|provinsi|kecamatan|kec|terkait|soal|kalau|kalo|saat\s+ini|sekarang|sudah|today|please|the|available|currently|ga|gak|gk|ngga|nggak|engga|enggak|kah|ya|siapa|dalam|dengan|sendiri|perhutanan|sosial|berapa|jumlah|total|banyak|penghasil|tersebut|kelompok|usaha)\b/gi;
+const SEARCH_ACTIONS = /\b(ada|cari|mencari|carikan|tampilkan|lihat|cek|katalog|tersedia|daftar|daftarkan|terdaftar|mana|mana\s+aja|mana\s+saja|apa\s+aja|apa\s+ja|apa\s+saja|rekomendasikan|rekomendasi|beli|membeli|pesan|memesan|order)\b/i;
+const SEARCH_FILLER = /\b(tolong|coba|sebutkan|carikan|cari|mencari|tampilkan|lihat|rekomendasikan|rekomendasi|menjual|dijual|menawarkan|memasarkan|pemasaran|beli|membeli|pesan|memesan|order|pembelian|apa|apaan|saja|aja|ja|ada|yang|di|dari|mana|dimana|kups|kelompok|saya|aku|gue|gw|mau|ingin|pengen|tahu|tau|dong|deh|sih|nih|tuh|tu|loh|eh|emang|memang|gitu|gini|nanya|tanya|info|informasi|ttg|tentang|mengenai|untuk|apakah|website|situs|web|ini|publik|product|products|produk|produk-produk|nya|barang|komoditas|hasil\s+usaha|katalog|profil|profile|direktori|data|lokasi|lokasinya|alamat|wilayah|daerah|daftar|daftarkan|terdaftar|sebaran|berada|kabupaten|kab|kota|provinsi|kecamatan|kec|terkait|soal|kalau|kalo|saat\s+ini|sekarang|sudah|today|please|the|available|currently|ga|gak|gk|ngga|nggak|engga|enggak|fa|kah|ya|siapa|dalam|dengan|sendiri|perhutanan|sosial|berapa|jumlah|total|banyak|penghasil|tersebut|kelompok|usaha|wisata|destinasi|ekowisata|homestay|penginapan|kunjungan|tiket|alam|tempat|dikelola|oleh|bukan|penjelasan|penjelaskan|jelaskan|caranya|gimana|bagaimana|harus|terus|trus|ikut|ikutan|anggota|sih|emang|memang|publikasi|ebook|e-book|buku|bacaan|modul|unduhan|unduh|download|pagi|sore|malam|nih|aja|aj|gak|ga|enggak|apa|tentang|mengenai|hasil|di\s+mana)\b/gi;
 
 export function isKupsListQuestion(question: string): boolean {
   // If the user explicitly asks for products or tourism, the KUPS mention is
@@ -49,6 +49,9 @@ export function isKupsListQuestion(question: string): boolean {
 
 export function cleanCatalogQuery(question: string): string {
   const cleaned = question
+    .replace(/\b(?:bukan|tidak|nggak|enggak|gak)\s+(?:penjelasan|penjelasan\s+tentang|uraian|definisi)\b/gi, " ")
+    .replace(/\b(?:mau|ingin|pengen)\s+(?:melihat|mencari|cari|membeli|beli|memesan|pesan)\b/gi, " ")
+    .replace(/\b(?:tempat\s+wisata|objek\s+wisata|destinasi\s+wisata)\b/gi, " ")
     .replace(SEARCH_FILLER, " ")
     .replace(/[?!.,;:]+/g, " ")
     .replace(/\s+/g, " ")
@@ -61,8 +64,8 @@ export function detectCatalogIntent(question: string): CatalogIntent | undefined
   const asksForProducts = PRODUCT_TERMS.test(normalized);
   const asksForTourism = TOURISM_TERMS.test(normalized);
   const asksForPublicListings =
-    /\b(?:cari|carikan|tampilkan|lihat|cek|katalog)\b.{0,55}\b(?:produk|barang|komoditas|madu|kopi|durian|duren|bambu|rotan|kerajinan|wisata|destinasi|ekowisata|homestay)\b/i.test(normalized) ||
-    /\b(?:menjual|dijual|menawarkan|listing|tersedia)\b.{0,45}\b(?:produk|barang|komoditas|madu|kopi|durian|duren|bambu|rotan|kerajinan|wisata|destinasi|ekowisata|homestay)\b/i.test(normalized) ||
+    /\b(?:cari|mencari|carikan|tampilkan|lihat|cek|katalog|beli|membeli|pesan|memesan|order)\b.{0,55}\b(?:produk|barang|komoditas|madu|kopi|durian|duren|bambu|rotan|kerajinan|wisata|destinasi|ekowisata|homestay)\b/i.test(normalized) ||
+    /\b(?:menjual|dijual|menawarkan|listing|tersedia|beli|membeli|pesan|memesan|order)\b.{0,45}\b(?:produk|barang|komoditas|madu|kopi|durian|duren|bambu|rotan|kerajinan|wisata|destinasi|ekowisata|homestay)\b/i.test(normalized) ||
     /\b(?:ada|cari|carikan|tampilkan|sebutkan)\b.{0,55}\b(?:produk|listing|kelompok|KUPS)\b.{0,55}\b(?:madu|kopi|durian|duren|bambu|rotan|kerajinan|wisata|ekowisata|homestay)\b/i.test(normalized) ||
     /\b(?:produk|barang|komoditas|wisata|destinasi)\b.{0,45}\b(?:apa\s+(?:aja|saja)|katalog|tersedia|terdaftar)\b/i.test(normalized);
   if (isKupsListQuestion(normalized)) {

@@ -56,8 +56,9 @@ const BUSINESS_DEVELOPMENT_FOLLOWUP = /\b(?:cara|gimana|bagaimana)\b.{0,45}\b(?:
 const KUPS_DEFINITION_QUESTION = /\b(?:arti|pengertian|definisi|singkatan|singktn|kepanjangan)\b.{0,45}\bkups\b|\b(?:apa|apaan)\b.{0,45}\bkups\b|\bkups\b.{0,55}\b(?:itu|tu|tuh|apa|apaan|adalah|arti|pengertian|definisi|singkatan|singktn|kepanjangan)\b/i;
 const KPS_PS_DIFFERENCE = /\b(?:beda|bedanya|perbedaan)\b.{0,35}\b(?:kps|ps)\b.{0,30}\b(?:kps|ps)\b|\b(?:kps|ps)\b.{0,20}\b(?:sama|sm|dan|vs|dengan)\b.{0,20}\b(?:kps|ps)\b.{0,35}\b(?:beda|bedanya|perbedaan)\b/i;
 const KUPS_GROUP_COMPARISON = /\b(?:beda|bedanya|perbedaan)\b.{0,45}\bkups\b.{0,55}\b(?:kelompok\s+tani|kelompok\s+biasa|kelompok\s+usaha|kps)\b|\b(?:kelompok\s+tani|kelompok\s+biasa)\b.{0,55}\bkups\b.{0,35}\b(?:beda|bedanya|perbedaan)\b/i;
-const KUPS_BENEFIT_QUESTION = /\b(?:manfaat(?:nya)?|keuntungan(?:nya)?|faedah(?:nya)?|untung(?:nya)?|dukungan|fasilitas|bantuan)\b.{0,100}\b(?:kups|usaha|daftar|jadi|bergabung|anggota)\b|\b(?:kups|anggota\s+kups)\b.{0,100}\b(?:manfaat(?:nya)?|keuntungan(?:nya)?|faedah(?:nya)?|untung(?:nya)?|dukungan|fasilitas|bantuan|mengembangkan|berkembang)\b|\bkups\b.{0,65}\b(?:bisa|dapat)\s+(?:bantu|membantu|mendukung)\b/i;
+const KUPS_BENEFIT_QUESTION = /\b(?:manfaat(?:nya)?|keuntungan(?:nya)?|faedah(?:nya)?|untung(?:nya)?|dukungan|fasilitas|bantuan)\b.{0,100}\b(?:kups|usaha|daftar|jadi|ikut(?:an)?|gabung|bergabung|anggota)\b|\b(?:kups|anggota\s+kups)\b.{0,100}\b(?:manfaat(?:nya)?|keuntungan(?:nya)?|faedah(?:nya)?|untung(?:nya)?|dukungan|fasilitas|bantuan|mengembangkan|berkembang)\b|\bkups\b.{0,65}\b(?:bisa|dapat)\s+(?:bantu|membantu|mendukung)\b/i;
 const KUPS_MEMBER_JOIN_GUIDE = /\b(?:anggota|keanggotaan)\b.{0,50}\bkups\b|\bkups\b.{0,50}\b(?:anggota|bergabung|gabung|ikut)\b|\b(?:bergabung|gabung|ikut)\b.{0,40}\bkups\b/i;
+const REGISTRATION_REQUIREMENTS_FOLLOWUP = /\b(?:syarat(?:nya)?|persyaratan|berkas|dokumen|ribet|susah|sulit|lama|proses(?:nya)?)\b/i;
 const KUPS_REGISTRATION_GUIDE = /\b(?:gimana|bagaimana|cara|langkah|prosedur|persyaratan|syarat(?:nya)?|pengajuan|ajukan|daftar|daftarin|mendaftar|pendaftaran|mulai|awal)\b.{0,110}\b(?:daftar|daftarin|mendaftar|pendaftaran|mengajukan|pengajuan|bergabung|gabung|ikut(?:an)?|program|jadi|menjadi|masuk|syarat|persyaratan)\b.{0,70}\b(?:kups|kelompok\s+usaha\s+perhutanan\s+sosial)\b|\b(?:kups|kelompok\s+usaha\s+perhutanan\s+sosial)\b.{0,90}\b(?:syarat|persyaratan|pengajuan|daftar|daftarin|mendaftar|pendaftaran|gabung|bergabung|ikutan|ikut|masuk|proses|cara)\b|\b(?:aku|saya|gue|gw)\b.{0,40}\b(?:mau|ingin|pengen)\s+(?:daftar|gabung|ikut(?:an)?|masuk)\b.{0,50}\bkups\b|\b(?:ikut|ikutan|bergabung|gabung)\b.{0,45}\b(?:program\s+)?kups\b|\b(?:bisa|boleh)\s+(?:aku|saya|gue|gw)?\s*(?:(?:ga|gak|gk|ngga|nggak|enggak|tidak)\s+)?(?:daftar|gabung|ikut(?:an)?|masuk)\b.{0,45}\bkups\b|\bkups\b.{0,45}\b(?:bisa|boleh)\s+(?:(?:ga|gak|gk|ngga|nggak|enggak|tidak)\s+)?(?:daftar|gabung|ikut(?:an)?|masuk)\b|\b(?:syarat|persyaratan|daftar|mendaftar|proses)\b.{0,60}\bkups\b/i;
 const KPS_DEFINITION_QUESTION = /\b(?:arti|pengertian|definisi|singkatan|kepanjangan|siapa)\b.{0,35}\b(?:kps|ps|gps)\b|\b(?:kps|ps|gps)\b.{0,35}\b(?:apa|arti|pengertian|definisi|singkatan|kepanjangan|siapa)\b/i;
 const KUPS_CLASS_QUESTION = /\b(?:kelas(?:nya)?|pemula|madya|utama)\b.{0,45}\bkups\b|\bkups\b.{0,45}\b(?:kelas(?:nya)?|pemula|madya|utama)\b|\b(?:blue|biru|silver|perak|gold|emas|platinum|platina)\b/i;
@@ -74,6 +75,7 @@ const PRIVATE_CONTACT_REQUEST = /\b(?:nomor\s+whatsapp\s+pribadi|wa\s+pribadi|no
 const CONTEXTUAL_COUNT_QUESTION = /\b(?:ada\s+berapa(?:\s+banyak)?|berapa\s+banyak|jumlahnya)\b|^\s*berapa\s*[?!.,]*$/i;
 const CONTEXTUAL_LOCATION_QUESTION = /\b(?:lokasinya|lokasi\s+kelompok|aku\s+mau\s+tahu\s+lokasinya|saya\s+ingin\s+tahu\s+lokasinya|di\s+mana|dimana|lokasi)\b/i;
 const COUNT_QUESTION = /\b(?:berapa|jumlah|banyak|total)\b/i;
+const PRODUCT_PURCHASE_QUESTION = /\b(?:beli|membeli|pesan|memesan|order|pembelian)\b/i;
 
 function sourceFromMetadata(metadata: KnowledgeMetadata): ChatSource | undefined {
   if (metadata.access !== "public") return undefined;
@@ -543,6 +545,13 @@ function publicDataAnswer(
   }).join("; ");
   if (intent.type === "product") {
     const productCount = items.length === 1 ? "satu produk" : `${items.length} produk`;
+    if (PRODUCT_PURCHASE_QUESTION.test(question)) {
+      const isDemo = items.some((item) => /demo|contoh|demonstrasi/i.test(`${item.title} ${item.description}`));
+      const purchaseNote = isDemo
+        ? "Hasil ini ditandai sebagai data demonstrasi, jadi belum tentu benar-benar tersedia untuk dibeli. Buka kartu detail untuk melihat informasi publik yang dicantumkan."
+        : "Untuk memesan, buka kartu detail dan cek petunjuk pemesanan atau kontak publik yang dicantumkan KUPS. Chatbot ini hanya menampilkan katalog, bukan memproses transaksi.";
+      return `Aku menemukan ${productCount}${queryText}: ${resultDetails}. ${purchaseNote} Data diperiksa ${checkedAt} WIB.`;
+    }
     return `Di katalog publik KUPS-Web, aku menemukan ${productCount}${queryText}: ${resultDetails}. Mau aku bukakan detailnya? Data diperiksa ${checkedAt} WIB.`;
   }
   return `Yang aku temukan ${items.length} hasil ${label}${queryText}: ${resultDetails}. ${nextStep[intent.type]} Data diperiksa ${checkedAt} WIB.`;
@@ -621,6 +630,11 @@ type KpsConnection = "connected" | "not_connected";
 
 function kpsConnection(question: string): KpsConnection | undefined {
   const compact = question.trim();
+  // A question about where/how to join is not evidence that the user is
+  // already a KPS member. Only use declarative replies to fill this slot.
+  if (/[?]\s*$/.test(compact) || /\b(?:mau|ingin|pengen|cara|gimana|bagaimana|harus|kemana|ke\s+mana|syarat)\b/i.test(compact)) {
+    return undefined;
+  }
   const shortReply = compact.split(/\s+/).filter(Boolean).length <= 3;
   if (/\b(?:sendiri|perorangan|individu|belum\s+(?:tergabung|terhubung|bergabung|punya\s+(?:kelompok|KPS)|ada\s+(?:kelompok|KPS))|tidak\s+(?:tergabung|terhubung|punya\s+(?:kelompok|KPS)))\b/i.test(compact) ||
     (shortReply && /\b(?:belum|belom|enggak|nggak|gak|tidak|bukan)\b/i.test(compact))) {
@@ -649,6 +663,31 @@ function isWaitingForKpsStatus(history: ChatTurn[]): boolean {
   return isKupsGuidance && /\bKPS\b|Kelompok Perhutanan Sosial/i.test(assistant) &&
     /\?/.test(assistant) &&
     /(?:tergabung|terhubung|dikelola|kelompok|sudah|belum)/i.test(assistant);
+}
+
+function isRegistrationRequirementsFollowup(question: string, history: ChatTurn[]): boolean {
+  if (!REGISTRATION_REQUIREMENTS_FOLLOWUP.test(question)) return false;
+  const priorUserTurns = history.filter((turn) => turn.role === "user").slice(-6);
+  const hasRegistrationContext = priorUserTurns.some((turn) =>
+    KUPS_REGISTRATION_GUIDE.test(turn.content) || KUPS_MEMBER_JOIN_GUIDE.test(turn.content) ||
+    PERSONAL_KUPS_ELIGIBILITY.test(turn.content),
+  );
+  const assistantAskedAboutThePath = /\b(?:KUPS|KPS|kelompok\s+perhutanan\s+sosial)\b/i.test(lastAssistantMessage(history));
+  return hasRegistrationContext && assistantAskedAboutThePath;
+}
+
+async function answerRegistrationRequirementsFollowup(question: string, history: ChatTurn[]): Promise<ChatResult> {
+  const activity = latestBusinessActivity(history, question);
+  const userText = history.filter((turn) => turn.role === "user").map((turn) => turn.content).join(" ");
+  const subject = /\b(?:teman|temen|kawan|sahabat)\b/i.test(userText) ? "temanmu" : "kamu";
+  const activityText = activity ? ` untuk usaha ${activity.label}` : "";
+  return answerFromApprovedFaq(
+    [...history.filter((turn) => turn.role === "user").map((turn) => turn.content), question].join(" "),
+    "permenlhk-9-2021-business",
+    `Wajar kalau mau tahu dulu. Yang bisa dipastikan${activityText}: KUPS dibentuk melalui KPS; rencana usaha dibahas bersama kelompok, lalu proses penetapan diarahkan melalui KPH atau pendamping Perhutanan Sosial [S1]. Sumber yang tersedia tidak merinci daftar berkas atau syarat keanggotaan tiap kelompok, jadi aku belum bisa memastikan prosesnya mudah atau rumit. ${subject === "temanmu" ? "Temanmu" : "Kamu"} sudah punya KPS tujuan, atau masih mencari kelompok di daerah?`,
+    true,
+    question,
+  );
 }
 
 function isWaitingForBusinessActivity(history: ChatTurn[]): boolean {
@@ -785,6 +824,10 @@ async function answerBusinessGuideFollowup(
   }
 
   if (isWaitingForKpsStatus(history)) {
+    if (/\b(?:mau|ingin|pengen)\s+(?:gabung|bergabung|ikut(?:an)?)\b/i.test(question) &&
+      /\b(?:kemana|ke\s+mana|harus|caranya|cara|hubungi|kontak)\b/i.test(question)) {
+      return answerKpsGroupJoin(question);
+    }
     const connection = kpsConnection(question);
     if (!connection) {
       const statesBusinessExists = /\b(?:memiliki|punya|sudah|udah|menjalankan|jalanin|berjalan|penjual|pedagang|jualan|produsen|berdagang)\b/i.test(question);
@@ -1024,6 +1067,10 @@ export async function answerQuestion(question: string, history: ChatTurn[] = [])
     return answerWebsiteManagement(compactQuestion);
   }
 
+  if (isRegistrationRequirementsFollowup(compactQuestion, history)) {
+    return answerRegistrationRequirementsFollowup(compactQuestion, history);
+  }
+
   if (KUPS_GROUP_COMPARISON.test(compactQuestion)) {
     return answerFromApprovedFaq(
       normalized,
@@ -1046,6 +1093,7 @@ export async function answerQuestion(question: string, history: ChatTurn[] = [])
   }
   if (
     KUPS_DEFINITION_QUESTION.test(compactQuestion) &&
+    !KUPS_BENEFIT_QUESTION.test(compactQuestion) &&
     !isKupsListQuestion(compactQuestion) &&
     detectedCatalogIntent &&
     ["product", "tourism", "both", "publication"].includes(detectedCatalogIntent.type)
@@ -1056,7 +1104,11 @@ export async function answerQuestion(question: string, history: ChatTurn[] = [])
       answerKupsTermQuestion(original, normalized, "definition"),
     );
   }
-  if (KUPS_DEFINITION_QUESTION.test(compactQuestion) && !isKupsListQuestion(compactQuestion)) {
+  if (
+    KUPS_DEFINITION_QUESTION.test(compactQuestion) &&
+    !KUPS_BENEFIT_QUESTION.test(compactQuestion) &&
+    !isKupsListQuestion(compactQuestion)
+  ) {
     return answerKupsTermQuestion(original, normalized, "definition");
   }
   if (KUPS_CLASS_QUESTION.test(compactQuestion)) {
