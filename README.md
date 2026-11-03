@@ -9,6 +9,26 @@ Service chatbot berbasis alur deterministik. Tidak memakai LLM untuk memahami pe
 3. Jalankan `npm install`, lalu `npm run ingest` untuk membangun indeks dokumen lokal.
 4. Jalankan `npm run dev`. Service tersedia di `http://127.0.0.1:4001`; widget KUPS-Web meneruskan permintaan lewat BFF same-origin.
 
+## Live chat konsultan
+
+- Beranda `/` menawarkan dua layanan: konsultasi ahli untuk kasus spesifik dan hubungi pendamping untuk dukungan kelompok berkelanjutan.
+- Direktori `/konsultasi` saat ini berisi empat profil bidang contoh. Nama ahli, pengalaman, wilayah, dan ketersediaan belum terhubung ke roster nyata. Waktu yang dikirim adalah permintaan dan perlu dikonfirmasi oleh tim.
+- Form `/chat` mengumpulkan kebutuhan, nama, area/kelompok opsional, ringkasan kasus, dan waktu pilihan untuk konsultasi ahli. Ringkasan kasus menjadi pesan pertama di ruang 1-on-1.
+- Pengunjung dapat melihat percakapan serta catatan penutupan di `/riwayat`. Browser menyimpan daftar token sesi di `sessionStorage`; isi sesi berada di memori server.
+- Konsultan membuka `/operator`, mengambil sesi dari antrean, dan membalas di ruang percakapan yang sama. Saat menutup sesi, konsultan wajib menulis ringkasan dan langkah lanjut.
+- Pesan dikirim lewat HTTP `POST`; pembaruan pesan dan status diterima lewat Server-Sent Events (SSE). Fitur ini tidak memakai WebSocket.
+- Chatbot informasi tersedia di `/chatbot`. Jika triase menemukan kebutuhan yang lebih khusus, chatbot menawarkan tautan ke bidang ahli dengan ringkasan masalah ikut dibawa ke form konsultasi.
+- Untuk lokal, token konsultan bawaan adalah `local-kups-dev`. Sebelum production, isi `LIVE_CHAT_OPERATOR_TOKEN` dengan token acak yang kuat dan `LIVE_CHAT_OPERATOR_NAME` dengan nama konsultan.
+- Implementasi penyimpanan sesi saat ini berada di memori proses, maksimal 100 sesi aktif selama 12 jam. Riwayat prototipe bergantung pada browser dan proses server yang sama. Deployment multi-instance/serverless atau riwayat yang harus tahan restart perlu store bersama seperti Redis/Postgres.
+
+### Alur SSE
+
+1. Browser membuat sesi konsultasi dengan `POST /api/live-chat/sessions`; server mengembalikan id sesi dan token pengunjung.
+2. Browser membuka `POST /api/live-chat/sessions/{id}/events` dengan `Accept: text/event-stream` dan token tersebut. Server mengirim snapshot awal, lalu event `message` dan `status` saat ada perubahan.
+3. Pengunjung dan konsultan mengirim pesan melalui `POST /messages`. Server menyimpan pesan, lalu mendorong event sesi ke koneksi SSE kedua pihak.
+4. Konsultan menerima sesi melalui inbox SSE `/api/live-chat/operator/queue`, mengambilnya, lalu menyelesaikan sesi dengan catatan tindak lanjut.
+5. Jika koneksi SSE terputus, klien mencoba menyambungkan ulang. `POST` dipakai untuk membuat/mengirim data; SSE hanya untuk menerima perubahan, sehingga komunikasi tetap HTTP tanpa WebSocket.
+
 ## Cara kerja
 
 - Sapaan, identitas, definisi KUPS/KPS/PS, panduan pendaftaran, manfaat, kelayakan awal, dan triase konsultasi ditangani oleh intent/rule engine serta jawaban terkurasi.

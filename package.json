@@ -8,7 +8,7 @@
     "start": "next start --hostname 127.0.0.1 --port 4001",
     "memory:check": "python3 scripts/check-memory.py",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test src/lib/chatbot/normalize.test.ts src/lib/chatbot/rate-limit.test.ts src/lib/chatbot/session-memory.test.ts",
+    "test": "tsx --test scripts/evaluation-contracts.test.ts src/lib/chatbot/normalize.test.ts src/lib/chatbot/catalog-answers.test.ts src/lib/chatbot/knowledge-answers.test.ts src/lib/chatbot/conversation-context.test.ts src/lib/chatbot/kups-development-followup.test.ts src/lib/chatbot/rag.test.ts src/lib/chatbot/rate-limit.test.ts src/lib/chatbot/session-memory.test.ts",
     "ingest": "tsx scripts/ingest-knowledge.ts",
     "retrieval:check": "tsx scripts/check-retrieval.ts",
     "evaluate": "tsx scripts/evaluate-chat.ts"

@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Tanya KUPS | Informasi Perhutanan Sosial",
+  title: "KUPS | Konsultasi & Pendampingan",
   description:
-    "Temukan informasi KUPS dari sumber resmi dan dapatkan arahan awal untuk kebutuhan kelompok usaha.",
+    "Konsultasi ahli, pendampingan kelompok, dan informasi untuk usaha KUPS.",
 };
 
 export default function RootLayout({
