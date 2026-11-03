@@ -666,6 +666,11 @@ function isWaitingForSupportNeed(history: ChatTurn[]): boolean {
   );
 }
 
+function isWaitingForConsultationFollowup(history: ChatTurn[]): boolean {
+  const assistant = lastAssistantMessage(history);
+  return /(?:konsultasi.{0,70}(?:soal|tentang)|kebutuhan.{0,35}(?:utama|paling)|expert.{0,15}yang.{0,15}(?:pas|cocok))/i.test(assistant) && /\?/.test(assistant);
+}
+
 function buildExpertHandoff(
   question: string,
   history: ChatTurn[],
@@ -731,8 +736,39 @@ async function answerBusinessGuideFollowup(
   const userHistory = history.filter((turn) => turn.role === "user");
   const combinedUserText = [...userHistory.map((turn) => turn.content), question].join(" ");
   const activity = latestBusinessActivity(history, question);
-  if (!activity) return undefined;
   const subject = /\b(?:teman|temen|kawan|sahabat)\b/i.test(combinedUserText) ? "temanmu" : "usahamu";
+
+  if (isWaitingForConsultationFollowup(history)) {
+    const need = expertNeed(question) ?? expertNeed(userHistory.map((turn) => turn.content).join(" "));
+    if (!need) {
+      return {
+        answer: `Paham, kita bahas ${subject} dulu. Biar aku bisa mengarahkan ke expert yang cocok, ceritakan jenis usaha dan kabupaten/kotanya, serta bagian yang paling ingin dibantu—kelembagaan, produksi/mutu, legalitas, kemasan, pemasaran, atau pembiayaan?`,
+        sources: [],
+        catalogItems: [],
+        needsClarification: true,
+      };
+    }
+    if (!activity) {
+      return {
+        answer: `Oke, berarti kamu ingin membahas ${need.label}. Jenis usaha temanmu atau usahamu apa, dan berada di kabupaten/kota mana? Setelah tahu konteksnya aku bisa siapkan rekomendasi expert yang lebih pas.`,
+        sources: [],
+        catalogItems: [],
+        needsClarification: true,
+      };
+    }
+    const handoff = buildExpertHandoff(question, history, need);
+    if (handoff) {
+      return {
+        answer: `Oke, untuk usaha ${activity.label} dan kebutuhan ${need.label}, expert bidang ini paling relevan. Ringkasan ceritamu akan dibawa ke konsultasi supaya kamu tidak perlu mengulang dari awal.`,
+        sources: [],
+        catalogItems: [],
+        needsClarification: false,
+        handoff,
+      };
+    }
+  }
+
+  if (!activity) return undefined;
 
   if (/\b(?:expert|ahli|konsultasi|konsul)\b/i.test(question)) {
     const need = expertNeed(question) ?? expertNeed(userHistory.map((turn) => turn.content).join(" "));
@@ -964,6 +1000,10 @@ export async function answerQuestion(question: string, history: ChatTurn[] = [])
   }
   if (IDENTITY_QUESTION.test(compactQuestion)) {
     return quickReply("Aku asisten informasi KUPS-Web. Aku membantu mencari profil kelompok, produk, wisata, publikasi, statistik, dan memahami aturan KUPS dari sumbernya. Kalau kamu sedang merintis usaha, ceritakan situasimu; aku bantu susun langkah awal dan, bila perlu, rekomendasikan expert KUPS yang bidangnya sesuai.");
+  }
+  if (isWaitingForConsultationFollowup(history)) {
+    const consultation = await answerBusinessGuideFollowup(compactQuestion, history);
+    if (consultation) return consultation;
   }
   if (/\b(?:expert|ahli|konsultasi|konsul)\b/i.test(compactQuestion)) {
     const consultation = await answerBusinessGuideFollowup(compactQuestion, history);

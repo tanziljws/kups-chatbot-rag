@@ -27,6 +27,52 @@ export type KnowledgeMatch = {
 
 let indexPromise: Promise<KnowledgeIndex> | undefined;
 
+const QUERY_STOP_WORDS = new Set([
+  "apa", "itu", "sih", "tu", "tuh", "dong", "ya", "aku", "saya", "gue", "gw",
+  "yang", "di", "ke", "dari", "untuk", "tentang", "ini", "aja", "saja", "kah",
+  "kan", "ga", "gak", "gk", "nggak", "enggak", "dan", "atau", "dengan", "dalam",
+  "sebagai", "mau", "bisa", "ada", "nih", "deh", "terus", "saya", "dong",
+]);
+
+const QUERY_SYNONYMS: Record<string, string[]> = {
+  arti: ["definisi", "pengertian", "makna"],
+  apaan: ["arti", "definisi", "pengertian"],
+  definisi: ["arti", "pengertian", "makna"],
+  pengertian: ["arti", "definisi", "makna"],
+  makna: ["arti", "definisi", "pengertian"],
+  beda: ["perbedaan", "bedanya"],
+  bedanya: ["perbedaan", "beda"],
+  syarat: ["persyaratan", "kriteria"],
+  persyaratan: ["syarat", "kriteria"],
+  daftar: ["pendaftaran", "mendaftar", "pembentukan"],
+  pendaftaran: ["daftar", "mendaftar", "pembentukan"],
+  gabung: ["bergabung", "pembentukan"],
+  bergabung: ["gabung", "pembentukan"],
+  manfaat: ["keuntungan", "dukungan", "fasilitasi"],
+  keuntungan: ["manfaat", "dukungan", "fasilitasi"],
+  kelas: ["klasifikasi"],
+  klasifikasi: ["kelas"],
+  pemasaran: ["promosi", "pasar"],
+  promosi: ["pemasaran", "pasar"],
+  wisata: ["destinasi"],
+};
+
+function tokens(text: string): string[] {
+  return text.toLocaleLowerCase("id-ID").match(/[\p{L}\p{N}]+/gu) ?? [];
+}
+
+function lexicalSimilarity(query: string, document: Document<KnowledgeMetadata>): number {
+  const queryTokens = [...new Set(tokens(query).filter((token) => !QUERY_STOP_WORDS.has(token)))];
+  if (queryTokens.length === 0) return 0;
+
+  const documentText = [document.metadata.title, document.pageContent].filter(Boolean).join(" ");
+  const documentTokens = new Set(tokens(documentText));
+  const matchedConcepts = queryTokens.filter((token) =>
+    [token, ...(QUERY_SYNONYMS[token] ?? [])].some((candidate) => documentTokens.has(candidate)),
+  ).length;
+  return matchedConcepts / queryTokens.length;
+}
+
 async function loadIndex(): Promise<KnowledgeIndex> {
   const config = getChatbotConfig();
   const filename = path.join(process.cwd(), ".cache", "kups-knowledge-index.json");
@@ -76,12 +122,26 @@ export async function searchKnowledge(query: string, topK: number, minScore: num
     throw new Error("Dimensi encoder berubah. Jalankan npm run ingest untuk memperbarui indeks.");
   }
 
-  return index.documents
-    .map((chunk) => ({
-      document: { pageContent: chunk.text, metadata: chunk.metadata },
-      score: cosineSimilarity(queryEmbedding, chunk.embedding),
-    }))
+  const ranked = index.documents
+    .map((chunk) => {
+      const document = { pageContent: chunk.text, metadata: chunk.metadata };
+      const semanticScore = cosineSimilarity(queryEmbedding, chunk.embedding);
+      const keywordScore = lexicalSimilarity(query, document);
+      return {
+        document,
+        // Keep the requested encoder, while letting exact Indonesian terms and
+        // common FAQ paraphrases correct its English-only semantic ranking.
+        score: semanticScore * 0.7 + keywordScore * 0.3,
+      };
+    })
     .filter((match) => match.score >= minScore)
-    .sort((left, right) => right.score - left.score)
-    .slice(0, topK);
+    .sort((left, right) => right.score - left.score);
+
+  const seenSources = new Set<string>();
+  return ranked.filter((match) => {
+    const sourceId = String(match.document.metadata.sourceId ?? match.document.metadata.filename ?? match.document.pageContent);
+    if (seenSources.has(sourceId)) return false;
+    seenSources.add(sourceId);
+    return true;
+  }).slice(0, topK);
 }

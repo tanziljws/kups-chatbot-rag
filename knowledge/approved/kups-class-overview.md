@@ -1,6 +1,6 @@
 ---
 title: Gambaran umum kelas KUPS
-url: https://jdih.menlhk.go.id/kiosk/files/PERMENHUT_18_2025.pdf
+url: https://jdih.kehutanan.go.id/new2/uploads/files/PERMENHUT_18_2025.pdf
 authority: JDIH Kementerian Kehutanan
 checkedAt: 2026-11-03
 access: public

@@ -167,7 +167,7 @@ export default function HomePage() {
               Portal GoKUPS <span aria-hidden="true">↗</span>
             </a>
             <a
-              href="https://jdih.menlhk.go.id/new2/uploads/files/2021pmlhk009_menlhk_06102021150537.pdf"
+              href="https://jdih.kehutanan.go.id/new2/home/portfolioDetails3/2021pmlhk009_menlhk_06102021150537.pdf/9/2021/4/1067"
               target="_blank"
               rel="noreferrer"
             >
