@@ -17,21 +17,35 @@ export type PublicCatalogItem = {
 export type CatalogIntent = { type: "product" | "tourism" | "both" | "kups" | "publication" | "stats"; query: string };
 export type PublicWebsiteStats = { kups: number; products: number; destinations: number; provinces: number };
 
-const PRODUCT_TERMS = /\b(product|products|produk|produk-produk|barang|komoditas|madu|kopi|duren|durian|kerajinan|hasil\s+usaha|oleh[- ]?oleh|dijual|jual)\b/i;
+const PRODUCT_TERMS = /\b(product|products|produk|produk-produk|barang|komoditas|madu|kopi|duren|durian|bambu|rotan|kerajinan|hasil\s+usaha|hasil\s+hutan\s+bukan\s+kayu|hhbk|oleh[- ]?oleh|dijual|jual)\b/i;
+const PRODUCT_CATEGORY_TERMS = /\b(product|products|produk|produk-produk|barang|komoditas|hasil\s+usaha|hasil\s+hutan\s+bukan\s+kayu|hhbk)\b/i;
 const TOURISM_TERMS = /\b(wisata|destinasi|ekowisata|homestay|penginapan|kunjungan|tiket)\b/i;
 const PUBLICATION_TERMS = /\b(publikasi|ebook|e-book|buku|bacaan|modul|unduhan|unduh|download)\b/i;
 const KUPS_TERMS = /\bkups\b/i;
-const KUPS_LIST_QUESTION = /\b(?:ada|cari|lihat|tampilkan|sebutkan)\b.{0,35}\bkups\b.{0,35}\b(?:apa\s+(?:aja|saja)|mana\s+(?:aja|saja))\b|\b(?:apa|mana)\s+(?:aja|saja)\b.{0,30}\bkups\b|\bkups\b.{0,30}\b(?:apa|mana)\s+(?:aja|saja)\b/i;
-const KUPS_BENEFIT_QUESTION = /\b(?:manfaat(?:nya)?|keuntungan(?:nya)?|faedah(?:nya)?|untung(?:nya)?)\b.{0,90}\b(?:kups|daftar|jadi|bergabung|anggota)\b|\b(?:kups|anggota\s+kups)\b.{0,70}\b(?:manfaat(?:nya)?|keuntungan(?:nya)?|faedah(?:nya)?|untung(?:nya)?)\b/i;
-const KUPS_REGISTRATION_GUIDE = /\b(?:gimana|bagaimana|cara|langkah|prosedur|persyaratan|syarat)\b.{0,90}\b(?:daftar|mendaftar|pendaftaran|bergabung|gabung|jadi)\b.{0,35}\bkups\b/i;
-const KUPS_KNOWLEDGE_QUESTION = /\bkups\b.{0,45}\b(?:apa|apaan|itu|tu|tuh|arti|pengertian|definisi|kelas|syarat|manfaat|keuntungan|cara|prosedur|bagaimana|gimana)\b/i;
-const KUPS_DIRECTORY_ACTION = /\b(profil|profile|direktori|daftar|data|lokasi|alamat|wilayah|terdaftar|cari|mana\s+aja|mana\s+saja|dimana|di\s+mana|sebaran)\b/i;
-const KUPS_FACT_QUESTION = /\b(?:apa|apaan|itu|tu|tuh|kelas|status|arti|pengertian|definisi|syarat|manfaat|keuntungan|masuk|layak|bisa|aturan|dibentuk|siapa|kapan|berapa|sejarah)\b/i;
+const KUPS_LIST_QUESTION = /\b(?:ada|cari|carikan|lihat|tampilkan|sebutkan)\b.{0,45}\bkups\b.{0,55}\b(?:apa\s+(?:aja|saja)|mana\s+(?:aja|saja)|terdaftar|di\s+mana|dimana)\b|\b(?:apa|mana)\s+(?:aja|saja)\b.{0,35}\bkups\b|\bkups\b.{0,55}\b(?:apa|mana)\s+(?:aja|saja)\b/i;
+const KUPS_COMMODITY_LOOKUP = /\b(?:kups)\b.{0,65}\b(?:madu|kopi|duren|durian|bambu|rotan|kerajinan|wisata|ekowisata)\b|\b(?:madu|kopi|duren|durian|bambu|rotan|kerajinan|wisata|ekowisata)\b.{0,65}\b(?:kups)\b/i;
+const KUPS_BENEFIT_QUESTION = /\b(?:manfaat(?:nya)?|keuntungan(?:nya)?|faedah(?:nya)?|untung(?:nya)?|dukungan|fasilitas|bantuan)\b.{0,100}\b(?:kups|usaha|daftar|jadi|bergabung|anggota)\b|\b(?:kups|anggota\s+kups)\b.{0,100}\b(?:manfaat(?:nya)?|keuntungan(?:nya)?|faedah(?:nya)?|untung(?:nya)?|dukungan|fasilitas|bantuan)\b|\bkups\b.{0,45}\b(?:bisa|dapat)\s+(?:membantu|bantu|mendukung)\b/i;
+const KUPS_REGISTRATION_GUIDE = /\b(?:gimana|bagaimana|cara|langkah|prosedur|persyaratan|syarat(?:nya)?|pengajuan|ajukan|mulai)\b.{0,110}\b(?:daftar|daftarin|mendaftar|pendaftaran|mengajukan|pengajuan|ikut(?:an)?|bergabung|gabung|program|jadi)\b.{0,55}\b(?:kups|kelompok\s+usaha\s+perhutanan\s+sosial)\b|\b(?:kups|kelompok\s+usaha\s+perhutanan\s+sosial)\b.{0,75}\b(?:syarat|persyaratan|pengajuan|daftar|daftarin|mendaftar|pendaftaran|gabung|bergabung|ikutan|ikut)\b/i;
+const KUPS_KNOWLEDGE_QUESTION = /\bkups\b.{0,55}\b(?:apa|apaan|itu|tu|tuh|arti|pengertian|definisi|singkatan|kelas|syarat|persyaratan|manfaat|keuntungan|cara|prosedur|bagaimana|gimana|program|bantuan|dukungan|fasilitas)\b/i;
+const KUPS_DIRECTORY_ACTION = /\b(profil|profile|direktori|data|lokasi|lokasinya|alamat|wilayah|terdaftar|cari|carikan|tampilkan|sebutkan|informasi|info|sebaran)\b/i;
+const PLACE_QUERY = /\b(?:di|dari|wilayah|provinsi|kabupaten|kota)\s+(?:provinsi\s+|kabupaten\s+|kota\s+)?[\p{L}][\p{L} .'-]{1,55}\b/iu;
+const NATIONAL_SCOPE = /\b(?:seluruh\s+indonesia|se-indonesia|nasional|seluruh\s+negeri)\b/i;
 const STAT_TERMS = /\b(berapa|jumlah|total|statistik)\b/i;
 const STAT_ENTITY_TERMS = /\b(kups|kelompok|produk|product|wisata|destinasi|provinsi)\b/i;
 const EXPLANATION_TERMS = /\b(manfaat|khasiat|kandungan|pengertian|definisi|arti|cara\s+(?:membuat|mengolah|memulai)|resep|tips)\b/i;
 const SEARCH_ACTIONS = /\b(cari|carikan|tampilkan|lihat|cek|katalog|tersedia|daftar|mana|mana\s+aja|mana\s+saja|apa\s+aja|apa\s+saja|rekomendasikan|rekomendasi)\b/i;
-const SEARCH_FILLER = /\b(tolong|coba|carikan|cari|tampilkan|lihat|rekomendasikan|rekomendasi|apa|saja|aja|ada|yang|di|dari|mana|dimana|kups|kelompok|saya|aku|gue|gw|mau|ingin|pengen|tahu|tau|dong|deh|sih|nih|nanya|tanya|info|informasi|untuk|apakah|website|publik|product|products|produk|produk-produk|barang|komoditas|hasil\s+usaha|katalog|profil|profile|direktori|data|lokasi|alamat|wilayah|terdaftar|sebaran|tentang|mengenai|topik|terkait|soal|saat\s+ini|sekarang|today|please|the|available|currently|ga|gak|gk|ngga|nggak|engga|enggak|kah|ya)\b/gi;
+const SEARCH_FILLER = /\b(tolong|coba|sebutkan|carikan|cari|tampilkan|lihat|rekomendasikan|rekomendasi|menjual|dijual|menawarkan|memasarkan|pemasaran|apa|apaan|saja|aja|ada|yang|di|dari|mana|dimana|kups|kelompok|saya|aku|gue|gw|mau|ingin|pengen|tahu|tau|dong|deh|sih|nih|nanya|tanya|info|informasi|ttg|tentang|mengenai|untuk|apakah|website|situs|publik|product|products|produk|produk-produk|barang|komoditas|hasil\s+usaha|katalog|profil|profile|direktori|data|lokasi|lokasinya|alamat|wilayah|terdaftar|sebaran|berada|kabupaten|kab|kota|provinsi|kecamatan|kec|terkait|soal|saat\s+ini|sekarang|today|please|the|available|currently|ga|gak|gk|ngga|nggak|engga|enggak|kah|ya|tuh|tu|siapa|dalam|dengan|sendiri|perhutanan|sosial|berapa|jumlah|total|banyak|penghasil|tersebut|mengenai|kelompok|usaha)\b/gi;
+
+export function isKupsListQuestion(question: string): boolean {
+  // If the user explicitly asks for products or tourism, the KUPS mention is
+  // a source/owner reference, not a request to list KUPS profiles.
+  const explicitList = KUPS_LIST_QUESTION.test(question);
+  const commodityLookup = KUPS_COMMODITY_LOOKUP.test(question) &&
+    /\b(?:ada|cari|carikan|lihat|tampilkan|sebutkan|di\s+mana|dimana|mana\s+(?:aja|saja)|apa\s+(?:aja|saja)|terdaftar|penghasil)\b/i.test(question);
+  return (explicitList || commodityLookup) &&
+    !PRODUCT_CATEGORY_TERMS.test(question) &&
+    !TOURISM_TERMS.test(question);
+}
 
 export function cleanCatalogQuery(question: string): string {
   const cleaned = question
@@ -44,46 +58,75 @@ export function cleanCatalogQuery(question: string): string {
 
 export function detectCatalogIntent(question: string): CatalogIntent | undefined {
   const normalized = question.trim();
-  if (KUPS_LIST_QUESTION.test(normalized)) {
-    return { type: "kups", query: cleanCatalogQuery(normalized) };
+  const asksForProducts = PRODUCT_TERMS.test(normalized);
+  const asksForTourism = TOURISM_TERMS.test(normalized);
+  const asksForPublicListings =
+    /\b(?:cari|carikan|tampilkan|lihat|cek|katalog)\b.{0,55}\b(?:produk|barang|komoditas|madu|kopi|durian|duren|bambu|rotan|kerajinan|wisata|destinasi|ekowisata|homestay)\b/i.test(normalized) ||
+    /\b(?:menjual|dijual|menawarkan|listing|tersedia)\b.{0,45}\b(?:produk|barang|komoditas|madu|kopi|durian|duren|bambu|rotan|kerajinan|wisata|destinasi|ekowisata|homestay)\b/i.test(normalized) ||
+    /\b(?:ada|cari|carikan|tampilkan|sebutkan)\b.{0,55}\b(?:produk|listing|kelompok|KUPS)\b.{0,55}\b(?:madu|kopi|durian|duren|bambu|rotan|kerajinan|wisata|ekowisata|homestay)\b/i.test(normalized) ||
+    /\b(?:produk|barang|komoditas|wisata|destinasi)\b.{0,45}\b(?:apa\s+(?:aja|saja)|katalog|tersedia|terdaftar)\b/i.test(normalized);
+  if (isKupsListQuestion(normalized)) {
+    const query = cleanCatalogQuery(normalized);
+    return { type: "kups", query: PLACE_QUERY.test(normalized) || query ? query : "" };
   }
-  // A user asking about the benefits or process of joining KUPS is asking for
-  // guidance, not asking us to search the KUPS directory for a record.
-  if (KUPS_BENEFIT_QUESTION.test(normalized) || KUPS_REGISTRATION_GUIDE.test(normalized) || KUPS_KNOWLEDGE_QUESTION.test(normalized)) return undefined;
+  // Questions about meaning, eligibility, or the process belong to the guide,
+  // unless the user also explicitly asks us to look up public listings.
+  if (!asksForPublicListings && (KUPS_BENEFIT_QUESTION.test(normalized) || KUPS_REGISTRATION_GUIDE.test(normalized) || KUPS_KNOWLEDGE_QUESTION.test(normalized))) return undefined;
   if (STAT_TERMS.test(normalized) && STAT_ENTITY_TERMS.test(normalized)) {
+    if (KUPS_TERMS.test(normalized) && PLACE_QUERY.test(normalized) && !NATIONAL_SCOPE.test(normalized)) {
+      return { type: "kups", query: cleanCatalogQuery(normalized) };
+    }
+    if (KUPS_TERMS.test(normalized) && KUPS_COMMODITY_LOOKUP.test(normalized) && !NATIONAL_SCOPE.test(normalized)) {
+      return { type: "kups", query: cleanCatalogQuery(normalized) };
+    }
+    if (PRODUCT_TERMS.test(normalized) && !PRODUCT_CATEGORY_TERMS.test(normalized)) {
+      return { type: "product", query: cleanCatalogQuery(normalized) };
+    }
+    if (TOURISM_TERMS.test(normalized) && PLACE_QUERY.test(normalized) && !NATIONAL_SCOPE.test(normalized)) {
+      return { type: "tourism", query: cleanCatalogQuery(normalized) };
+    }
     return { type: "stats", query: "" };
   }
   if (PUBLICATION_TERMS.test(normalized)) {
     return { type: "publication", query: cleanCatalogQuery(normalized.replace(PUBLICATION_TERMS, " ")) };
   }
 
-  const wantsProducts = PRODUCT_TERMS.test(normalized);
-  const wantsTourism = TOURISM_TERMS.test(normalized);
+  const wantsProducts = asksForProducts;
+  const wantsTourism = asksForTourism;
   const asksForDetails = EXPLANATION_TERMS.test(normalized) && !SEARCH_ACTIONS.test(normalized);
-  const kupsNameQuery = cleanCatalogQuery(normalized.replace(/\bkups\b/gi, " "));
-  const namesSpecificKups = kupsNameQuery.split(/\s+/).filter(Boolean).length >= 2 && !KUPS_FACT_QUESTION.test(normalized);
-  const asksKupsByCommodity = KUPS_TERMS.test(normalized) && PRODUCT_TERMS.test(normalized) &&
-    /\b(?:ada|punya|usaha|mengelola|mengusahakan|komoditas|penghasil)\b/i.test(normalized);
-  if (KUPS_TERMS.test(normalized) &&
-    (KUPS_DIRECTORY_ACTION.test(normalized) || namesSpecificKups || asksKupsByCommodity) &&
-    !asksForDetails) {
-    return { type: "kups", query: kupsNameQuery };
-  }
-
-  if (asksForDetails) return undefined;
-  const hasCatalogCategory = /\b(product|products|produk|produk-produk|barang|komoditas|hasil\s+usaha)\b/i.test(normalized);
+  const hasCatalogCategory = PRODUCT_CATEGORY_TERMS.test(normalized);
   const explicitlyCheckingCatalog = /\b(?:ada|tersedia)\b.{0,25}\b(?:di\s+)?(?:website|situs|katalog|marketplace)\b/i.test(normalized);
-  const wantsProductsFromContext = wantsProducts && (hasCatalogCategory || SEARCH_ACTIONS.test(normalized) || explicitlyCheckingCatalog);
+  const wantsProductsFromContext = wantsProducts && (
+    (hasCatalogCategory && SEARCH_ACTIONS.test(normalized)) ||
+    asksForPublicListings ||
+    explicitlyCheckingCatalog
+  );
   const wantsTourismFromContext = wantsTourism && (
     SEARCH_ACTIONS.test(normalized) ||
     /\b(?:destinasi|katalog|tempat\s+wisata)\b/i.test(normalized) ||
     /\b(?:di|sekitar)\s+\S+/i.test(normalized)
   );
-  if (!wantsProductsFromContext && !wantsTourismFromContext) return undefined;
+  // An explicit product or tourism request wins over a nearby KUPS mention:
+  // "carikan produk kopi dari kelompok KUPS" is a product search.
+  if ((wantsProductsFromContext || wantsTourismFromContext) && (asksForPublicListings || !KUPS_BENEFIT_QUESTION.test(normalized))) {
+    if (asksForDetails) return undefined;
+    const type = wantsProductsFromContext && wantsTourismFromContext ? "both" : wantsProductsFromContext ? "product" : "tourism";
+    const query = cleanCatalogQuery(normalized.replace(TOURISM_TERMS, " "));
+    return { type, query };
+  }
 
-  const type = wantsProductsFromContext && wantsTourismFromContext ? "both" : wantsProductsFromContext ? "product" : "tourism";
-  const query = cleanCatalogQuery(normalized.replace(TOURISM_TERMS, " "));
-  return { type, query };
+  if (KUPS_TERMS.test(normalized) && !asksForDetails) {
+    const textAfterKups = normalized.split(/\bkups\b/i).slice(1).join(" ");
+    const hasSpecificKupsQualifier = cleanCatalogQuery(textAfterKups).length > 0;
+    const isCommodityLookup = PRODUCT_TERMS.test(normalized) &&
+      /\b(?:ada|carikan|cari|di\s+mana|dimana|penghasil|kelompok|komoditas)\b/i.test(normalized);
+    if (KUPS_DIRECTORY_ACTION.test(normalized) || PLACE_QUERY.test(normalized) || hasSpecificKupsQualifier || isCommodityLookup) {
+      return { type: "kups", query: cleanCatalogQuery(normalized) };
+    }
+  }
+
+  if (asksForDetails) return undefined;
+  return undefined;
 }
 
 export function isAmbiguousSingleItem(question: string): boolean {
