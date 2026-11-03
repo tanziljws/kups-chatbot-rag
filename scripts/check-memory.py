@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Measure this project's Next.js process tree and llama-server RSS."""
+"""Measure this project's Next.js process tree RSS."""
 
 from pathlib import Path
 import re
@@ -43,18 +43,11 @@ while True:
         break
     app_pids.update(new_pids)
 
-model_pids = {
-    pid
-    for pid, process in processes.items()
-    if Path(process["command"].split()[0]).name == "llama-server"
-}
-selected_pids = app_pids | model_pids
+selected_pids = app_pids
 
 missing = []
 if not app_roots:
     missing.append("this project's Next.js server")
-if not model_pids:
-    missing.append("llama-server")
 if missing:
     print(
         "Start " + " and ".join(missing) + " before measuring memory.",
@@ -66,13 +59,13 @@ total_kib = sum(processes[pid]["rss"] for pid in selected_pids)
 used_mib = total_kib / 1024
 limit_mib = 1638
 print(
-    f"This project's Next.js tree + llama-server RSS: "
+    f"This project's Next.js tree RSS: "
     f"{used_mib:.0f} MiB (limit {limit_mib} MiB)"
 )
 
 if total_kib > limit_mib * 1024:
     print(
-        "Memory target exceeded; reduce the local model footprint or add RAM before launch.",
+        "Memory target exceeded; reduce the app or encoder footprint before launch.",
         file=sys.stderr,
     )
     sys.exit(1)

@@ -6,7 +6,6 @@
     "dev": "next dev --hostname 127.0.0.1 --port 4001",
     "build": "next build",
     "start": "next start --hostname 127.0.0.1 --port 4001",
-    "model": "sh scripts/run-local-llama.sh",
     "memory:check": "python3 scripts/check-memory.py",
     "typecheck": "tsc --noEmit",
     "test": "tsx --test src/lib/chatbot/normalize.test.ts src/lib/chatbot/rate-limit.test.ts src/lib/chatbot/session-memory.test.ts",
@@ -20,10 +19,8 @@
   "dependencies": {
     "@huggingface/transformers": "^3.7.2",
     "@langchain/core": "^1.0.0",
-    "@langchain/openai": "^1.0.0",
     "@langchain/textsplitters": "^1.0.0",
     "@next/env": "^16.4.4",
-    "langchain": "^1.0.0",
     "next": "^16.4.4",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"

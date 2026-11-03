@@ -5,9 +5,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   const configured = Boolean(
-    process.env.LOCAL_LLM_BASE_URL &&
-      process.env.LOCAL_LLM_MODEL &&
-      process.env.EMBEDDING_MODEL &&
+    process.env.EMBEDDING_MODEL &&
       process.env.KUPS_WEB_CATALOG_URL &&
       process.env.KUPS_WEB_API_KEY,
   );
