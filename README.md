@@ -26,4 +26,4 @@ Materi hanya boleh ditambahkan ke `knowledge/approved` setelah sumbernya dipasti
 
 Bot menjawab berdasarkan cakupan aturan/FAQ dan data publik yang disediakan endpoint. Ia tidak menetapkan status resmi KUPS, menjamin bantuan, atau menebak ketika data tidak tersedia. Perluas sinonim dan FAQ terkurasi jika variasi pertanyaan nyata belum dikenali.
 
-Percakapan disimpan sementara di RAM per sesi. Batas awal endpoint adalah 12 permintaan per IP/session per menit dan 1.000 karakter per pertanyaan.
+Percakapan disimpan sementara di RAM per sesi hingga 24 giliran agar topik usaha dan kebutuhan expert tetap nyambung setelah beberapa pertanyaan katalog. Sesi kedaluwarsa setelah 30 menit tidak aktif. Batas awal endpoint adalah 12 permintaan per IP/session per menit dan 1.000 karakter per pertanyaan.

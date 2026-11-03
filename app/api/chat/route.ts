@@ -73,8 +73,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: missingConfig
-          ? "Chat belum tersambung. Pengelola perlu menyiapkan indeks knowledge dan model lokal."
-          : "Chat sedang tidak tersedia. Periksa indeks knowledge, katalog KUPS-Web, dan model lokal, lalu coba lagi.",
+          ? "Chat belum tersambung. Pengelola perlu menyiapkan konfigurasi katalog dan materi FAQ."
+          : "Chat sedang tidak tersedia. Periksa materi FAQ dan koneksi katalog KUPS-Web, lalu coba lagi.",
       },
       { status, headers: { "cache-control": "no-store" } },
     );

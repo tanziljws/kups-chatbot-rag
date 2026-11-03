@@ -1,7 +1,7 @@
 import type { ChatTurn } from "./rag";
 
 const MAX_SESSIONS = 500;
-const MAX_TURNS = 6;
+const MAX_TURNS = 24;
 const SESSION_TTL_MS = 30 * 60 * 1000;
 const MAX_TURN_CHARS = 2000;
 

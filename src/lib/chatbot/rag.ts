@@ -57,6 +57,7 @@ const KUPS_DEFINITION_QUESTION = /\b(?:arti|pengertian|definisi|singkatan|singkt
 const KPS_PS_DIFFERENCE = /\b(?:beda|bedanya|perbedaan)\b.{0,35}\b(?:kps|ps)\b.{0,30}\b(?:kps|ps)\b|\b(?:kps|ps)\b.{0,20}\b(?:sama|sm|dan|vs|dengan)\b.{0,20}\b(?:kps|ps)\b.{0,35}\b(?:beda|bedanya|perbedaan)\b/i;
 const KUPS_GROUP_COMPARISON = /\b(?:beda|bedanya|perbedaan)\b.{0,45}\bkups\b.{0,55}\b(?:kelompok\s+tani|kelompok\s+biasa|kelompok\s+usaha|kps)\b|\b(?:kelompok\s+tani|kelompok\s+biasa)\b.{0,55}\bkups\b.{0,35}\b(?:beda|bedanya|perbedaan)\b/i;
 const KUPS_BENEFIT_QUESTION = /\b(?:manfaat(?:nya)?|keuntungan(?:nya)?|faedah(?:nya)?|untung(?:nya)?|dukungan|fasilitas|bantuan)\b.{0,100}\b(?:kups|usaha|daftar|jadi|bergabung|anggota)\b|\b(?:kups|anggota\s+kups)\b.{0,100}\b(?:manfaat(?:nya)?|keuntungan(?:nya)?|faedah(?:nya)?|untung(?:nya)?|dukungan|fasilitas|bantuan|mengembangkan|berkembang)\b|\bkups\b.{0,65}\b(?:bisa|dapat)\s+(?:bantu|membantu|mendukung)\b/i;
+const KUPS_MEMBER_JOIN_GUIDE = /\b(?:anggota|keanggotaan)\b.{0,50}\bkups\b|\bkups\b.{0,50}\b(?:anggota|bergabung|gabung|ikut)\b|\b(?:bergabung|gabung|ikut)\b.{0,40}\bkups\b/i;
 const KUPS_REGISTRATION_GUIDE = /\b(?:gimana|bagaimana|cara|langkah|prosedur|persyaratan|syarat(?:nya)?|pengajuan|ajukan|daftar|daftarin|mendaftar|pendaftaran|mulai|awal)\b.{0,110}\b(?:daftar|daftarin|mendaftar|pendaftaran|mengajukan|pengajuan|bergabung|gabung|ikut(?:an)?|program|jadi|menjadi|masuk|syarat|persyaratan)\b.{0,70}\b(?:kups|kelompok\s+usaha\s+perhutanan\s+sosial)\b|\b(?:kups|kelompok\s+usaha\s+perhutanan\s+sosial)\b.{0,90}\b(?:syarat|persyaratan|pengajuan|daftar|daftarin|mendaftar|pendaftaran|gabung|bergabung|ikutan|ikut|masuk|proses|cara)\b|\b(?:aku|saya|gue|gw)\b.{0,40}\b(?:mau|ingin|pengen)\s+(?:daftar|gabung|ikut(?:an)?|masuk)\b.{0,50}\bkups\b|\b(?:ikut|ikutan|bergabung|gabung)\b.{0,45}\b(?:program\s+)?kups\b|\b(?:bisa|boleh)\s+(?:aku|saya|gue|gw)?\s*(?:(?:ga|gak|gk|ngga|nggak|enggak|tidak)\s+)?(?:daftar|gabung|ikut(?:an)?|masuk)\b.{0,45}\bkups\b|\bkups\b.{0,45}\b(?:bisa|boleh)\s+(?:(?:ga|gak|gk|ngga|nggak|enggak|tidak)\s+)?(?:daftar|gabung|ikut(?:an)?|masuk)\b|\b(?:syarat|persyaratan|daftar|mendaftar|proses)\b.{0,60}\bkups\b/i;
 const KPS_DEFINITION_QUESTION = /\b(?:arti|pengertian|definisi|singkatan|kepanjangan|siapa)\b.{0,35}\b(?:kps|ps|gps)\b|\b(?:kps|ps|gps)\b.{0,35}\b(?:apa|arti|pengertian|definisi|singkatan|kepanjangan|siapa)\b/i;
 const KUPS_CLASS_QUESTION = /\b(?:kelas(?:nya)?|pemula|madya|utama)\b.{0,45}\bkups\b|\bkups\b.{0,45}\b(?:kelas(?:nya)?|pemula|madya|utama)\b|\b(?:blue|biru|silver|perak|gold|emas|platinum|platina)\b/i;
@@ -226,6 +227,15 @@ async function answerKpsGroupJoin(question: string): Promise<ChatResult> {
   );
 }
 
+async function answerKupsMembershipQuestion(question: string): Promise<ChatResult> {
+  return answerFromApprovedFaq(
+    question,
+    "permenlhk-9-2021-business",
+    "Kalau maksudmu bergabung sebagai anggota KUPS yang sudah ada, itu berbeda dari membentuk KUPS baru. Aturan yang tersedia menjelaskan KUPS dibentuk oleh KPS, tetapi tidak merinci syarat penerimaan anggota perorangan. Jadi, tanyakan mekanisme ke KUPS/KPS tujuan atau pendamping/KPH setempat. Kamu sudah tahu nama kelompok atau daerahnya? Kalau maksudmu membentuk KUPS baru, aku bisa jelaskan langkahnya lewat KPS.",
+    true,
+  );
+}
+
 async function answerKupsGroupFormation(question: string): Promise<ChatResult> {
   const asksAboutKps = /\b(?:KPS|kelompok\s+perhutanan\s+sosial|persetujuan\s+perhutanan\s+sosial|belum\s+punya\s+kelompok|kelompok\s+sendiri)\b/i.test(question);
   const asksExplicitKups = /\bKUPS\b|kelompok\s+usaha\s+perhutanan\s+sosial/i.test(question);
@@ -290,8 +300,7 @@ function answerPublicOfficerLookup(): ChatResult {
 }
 
 async function answerBusinessDevelopmentFollowup(question: string, history: ChatTurn[]): Promise<ChatResult> {
-  const priorUserText = history.filter((turn) => turn.role === "user").map((turn) => turn.content).join(" ");
-  const activity = businessActivity(`${priorUserText} ${question}`);
+  const activity = latestBusinessActivity(history, question);
   if (!activity) {
     if (/\bkups\b/i.test(question)) {
       return answerFromApprovedFaq(
@@ -346,8 +355,7 @@ async function answerKupsBusinessGuide(
     return { answer: clarificationAnswer(original), sources: [], catalogItems: [], needsClarification: true };
   }
 
-  const priorBusiness = [...history].reverse().find((turn) => turn.role === "user" && businessActivity(turn.content));
-  const activity = businessActivity(normalized) ?? (priorBusiness ? businessActivity(priorBusiness.content) : undefined);
+  const activity = latestBusinessActivity(history, normalized);
   const alsoAsksRegistration = KUPS_REGISTRATION_GUIDE.test(normalized);
   const talkingAboutFriend = /\b(?:teman|temen|kawan|sahabat)\b/i.test(
     [...history, { role: "user" as const, content: normalized }].map((turn) => turn.content).join(" "),
@@ -571,6 +579,23 @@ function businessActivity(question: string): { label: string; type: "product" | 
   return { label: match, type: isTourism ? "tourism" : "product" };
 }
 
+function latestBusinessActivity(history: ChatTurn[], currentQuestion = ""): { label: string; type: "product" | "tourism" } | undefined {
+  const userTurns = [
+    ...history.filter((turn) => turn.role === "user"),
+    ...(currentQuestion ? [{ role: "user" as const, content: currentQuestion }] : []),
+  ];
+  for (const turn of userTurns.reverse()) {
+    const isBusinessContext = PERSONAL_KUPS_ELIGIBILITY.test(turn.content) ||
+      KUPS_BENEFIT_QUESTION.test(turn.content) ||
+      KUPS_REGISTRATION_GUIDE.test(turn.content) ||
+      BUSINESS_PLANNING.test(turn.content);
+    if (detectCatalogIntent(turn.content) && !isBusinessContext) continue;
+    const activity = businessActivity(turn.content);
+    if (activity) return activity;
+  }
+  return undefined;
+}
+
 type ExpertNeed = { specialty: ExpertHandoff["specialty"]; label: string };
 
 function expertNeed(question: string): ExpertNeed | undefined {
@@ -650,7 +675,7 @@ function buildExpertHandoff(
     .filter((turn) => turn.role === "user")
     .map((turn) => turn.content)
     .join(" ");
-  const activity = businessActivity(userText);
+  const activity = latestBusinessActivity(history, question);
   if (!activity) return null;
 
   const friend = /\b(?:teman|temen|kawan|sahabat)\b/i.test(userText);
@@ -705,14 +730,28 @@ async function answerBusinessGuideFollowup(
 
   const userHistory = history.filter((turn) => turn.role === "user");
   const combinedUserText = [...userHistory.map((turn) => turn.content), question].join(" ");
-  const activity = businessActivity(combinedUserText);
+  const activity = latestBusinessActivity(history, question);
   if (!activity) return undefined;
   const subject = /\b(?:teman|temen|kawan|sahabat)\b/i.test(combinedUserText) ? "temanmu" : "usahamu";
+
+  if (/\b(?:expert|ahli|konsultasi|konsul)\b/i.test(question)) {
+    const need = expertNeed(question) ?? expertNeed(userHistory.map((turn) => turn.content).join(" "));
+    const handoff = need ? buildExpertHandoff(question, history, need) : null;
+    if (need && handoff) {
+      return {
+        answer: `Untuk kebutuhan ${need.label}, aku merekomendasikan expert bidang ${need.label}. Pilih tombol di bawah untuk melihat expert dan jadwal yang tersedia.`,
+        sources: [],
+        catalogItems: [],
+        needsClarification: false,
+        handoff,
+      };
+    }
+  }
 
   if (isWaitingForKpsStatus(history)) {
     const connection = kpsConnection(question);
     if (!connection) {
-      const statesBusinessExists = /\b(?:memiliki|punya|sudah|udah|menjalankan|jalanin|berjalan)\b/i.test(question);
+      const statesBusinessExists = /\b(?:memiliki|punya|sudah|udah|menjalankan|jalanin|berjalan|penjual|pedagang|jualan|produsen|berdagang)\b/i.test(question);
       const acknowledgement = statesBusinessExists
         ? `Oh, berarti ${subject === "temanmu" ? `usaha ${activity.label} temanmu` : `usaha ${activity.label}-mu`} memang sudah berjalan. `
         : "";
@@ -861,6 +900,24 @@ function isCatalogChoiceReply(question: string, history: ChatTurn[]): boolean {
     /\b(?:katalog|produk|rencana\s+usaha|bisnis)\b/i.test(lastAssistant);
 }
 
+function contextualCatalogIntent(question: string, history: ChatTurn[]): CatalogIntent | undefined {
+  const compact = question.trim().toLocaleLowerCase();
+  const topic = compact.match(/^(?:(?:kalau|kalo|terus|trus|dan|untuk)\s+)?(produk|produk-produk|wisata|destinasi|publikasi)(?:\s+(?:itu|nya|tuh|aja|saja|apa))?[?!.,\s]*$/)?.[1];
+  if (!topic) return undefined;
+  const previousQuestion = previousUserQuestion(history);
+  const previousIntent = detectCatalogIntent(previousQuestion);
+  const lastAssistant = lastAssistantMessage(history);
+  const hasRecentCatalogContext = Boolean(previousIntent) ||
+    /(?:di\s+(?:direktori|katalog)\s+publik|hasil\s+destinasi\s+wisata|kartu\s+di\s+bawah\s+(?:memuat|menunjukkan)|data\s+publik\s+KUPS-Web)/i.test(lastAssistant);
+  if (!hasRecentCatalogContext) return undefined;
+  const type: CatalogIntent["type"] = /publikasi/.test(topic) ? "publication" : /wisata|destinasi/.test(topic) ? "tourism" : "product";
+  return { type, query: "" };
+}
+
+function isBareCatalogTopic(question: string): boolean {
+  return /^(?:(?:kalau|kalo|terus|trus|dan|untuk)\s+)?(?:produk|produk-produk|wisata|destinasi|publikasi)(?:\s+(?:itu|nya|tuh|aja|saja|apa))?[?!.,\s]*$/i.test(question.trim());
+}
+
 function isBusinessChoiceReply(question: string, history: ChatTurn[]): boolean {
   const lastAssistant = [...history].reverse().find((turn) => turn.role === "assistant")?.content ?? "";
   return isAmbiguousSingleItem(previousUserQuestion(history)) &&
@@ -898,7 +955,7 @@ function isEligibilityContextFollowup(question: string, history: ChatTurn[]): bo
 export async function answerQuestion(question: string, history: ChatTurn[] = []): Promise<ChatResult> {
   const { original, normalized } = normalizeQuestion(question);
   const compactQuestion = normalized.trim();
-  const detectedCatalogIntent = detectCatalogIntent(compactQuestion);
+  const detectedCatalogIntent = detectCatalogIntent(compactQuestion) ?? contextualCatalogIntent(compactQuestion, history);
   if (GREETING_ONLY.test(compactQuestion)) {
     return quickReply("Hai! Aku asisten KUPS-Web. Kamu bisa tanya istilah atau aturan KUPS, minta dicari profil/produk/wisata/publikasi yang tampil di situs, atau cerita soal rencana usahamu. Lagi butuh bantuan yang mana?");
   }
@@ -908,7 +965,12 @@ export async function answerQuestion(question: string, history: ChatTurn[] = [])
   if (IDENTITY_QUESTION.test(compactQuestion)) {
     return quickReply("Aku asisten informasi KUPS-Web. Aku membantu mencari profil kelompok, produk, wisata, publikasi, statistik, dan memahami aturan KUPS dari sumbernya. Kalau kamu sedang merintis usaha, ceritakan situasimu; aku bantu susun langkah awal dan, bila perlu, rekomendasikan expert KUPS yang bidangnya sesuai.");
   }
-  if (WEBSITE_QUESTION.test(compactQuestion)) {
+  if (/\b(?:expert|ahli|konsultasi|konsul)\b/i.test(compactQuestion)) {
+    const consultation = await answerBusinessGuideFollowup(compactQuestion, history);
+    if (consultation) return consultation;
+    return quickReply("Bisa, aku bantu arahkan. Kamu ingin konsultasi soal kelembagaan/KUPS, produksi dan mutu, legalitas, branding/kemasan, pemasaran, atau pembiayaan? Ceritakan jenis usahamu dan kabupaten/kotanya supaya rekomendasinya lebih pas.");
+  }
+  if (WEBSITE_QUESTION.test(compactQuestion) && !detectedCatalogIntent) {
     return quickReply("Ini KUPS-Web, tempat melihat profil dan penawaran publik dari Kelompok Usaha Perhutanan Sosial, seperti produk dan destinasi wisata, serta publikasi terkait. Aku bisa bantu cari di dalam situs atau menjelaskan istilah dan aturan yang berkaitan. Kamu ingin mencari nama kelompok, produk, atau topik tertentu?");
   }
 
@@ -1018,6 +1080,15 @@ export async function answerQuestion(question: string, history: ChatTurn[] = [])
   }
   if (KUPS_BENEFIT_QUESTION.test(compactQuestion)) {
     return answerKupsBusinessGuide(original, normalized, "benefits", history);
+  }
+  if (KUPS_MEMBER_JOIN_GUIDE.test(compactQuestion)) {
+    return answerKupsMembershipQuestion(normalized);
+  }
+  const asksExplicitRegistrationProcess = /\b(?:cara|langkah|prosedur|syarat|persyaratan|pendaftaran|pengajuan)\b.{0,45}\b(?:daftar|mendaftar|bergabung|KUPS)\b/i.test(compactQuestion);
+  const asksEligibility = PERSONAL_KUPS_ELIGIBILITY.test(compactQuestion) &&
+    /\b(?:bisa|boleh|layak|termasuk|masuk)\b/i.test(compactQuestion);
+  if (asksEligibility && !asksExplicitRegistrationProcess) {
+    return answerEligibilityQuestion(original, normalized);
   }
   if (KUPS_REGISTRATION_GUIDE.test(compactQuestion)) {
     return answerKupsBusinessGuide(original, normalized, "registration", history);
@@ -1175,6 +1246,14 @@ export async function answerQuestion(question: string, history: ChatTurn[] = [])
   if (isAmbiguousSingleItem(compactQuestion)) {
     return {
       answer: `Maksudmu “${compactQuestion}” ingin melihat contoh yang sudah tayang di katalog KUPS-Web, atau sedang merencanakan usaha ${compactQuestion}? Kalau soal rencana usaha, ceritakan sedikit tahapmu; kalau katalog, balas “lihat katalog”.`,
+      sources: [],
+      catalogItems: [],
+      needsClarification: true,
+    };
+  }
+  if (isBareCatalogTopic(compactQuestion)) {
+    return {
+      answer: "Maksudmu ingin melihat produk atau destinasi yang terdaftar di katalog publik KUPS-Web, atau sedang membahas produk/usaha yang ingin kamu kembangkan?",
       sources: [],
       catalogItems: [],
       needsClarification: true,
