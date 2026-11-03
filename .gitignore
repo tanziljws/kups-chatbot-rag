@@ -1,0 +1,16 @@
+node_modules/
+.next/
+.cache/
+.hallmark/shots/
+out/
+coverage/
+.env
+.env.*
+!.env.example
+models/
+*.log
+*.tsbuildinfo
+__pycache__/
+*.py[cod]
+.DS_Store
+.hallmark/

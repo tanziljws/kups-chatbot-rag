@@ -1,0 +1,39 @@
+{
+  "name": "kups-rag-chatbot",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev --hostname 127.0.0.1 --port 4001",
+    "build": "next build",
+    "start": "next start --hostname 127.0.0.1 --port 4001",
+    "model": "sh scripts/run-local-llama.sh",
+    "memory:check": "python3 scripts/check-memory.py",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test src/lib/chatbot/normalize.test.ts src/lib/chatbot/rate-limit.test.ts src/lib/chatbot/session-memory.test.ts",
+    "ingest": "tsx scripts/ingest-knowledge.ts",
+    "retrieval:check": "tsx scripts/check-retrieval.ts",
+    "evaluate": "tsx scripts/evaluate-chat.ts"
+  },
+  "engines": {
+    "node": ">=20.9"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "^3.7.2",
+    "@langchain/core": "^1.0.0",
+    "@langchain/openai": "^1.0.0",
+    "@langchain/textsplitters": "^1.0.0",
+    "@next/env": "^16.4.4",
+    "langchain": "^1.0.0",
+    "next": "^16.4.4",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "puppeteer-core": "^25.16.0",
+    "tsx": "^4.20.0",
+    "typescript": "^5.8.3"
+  }
+}

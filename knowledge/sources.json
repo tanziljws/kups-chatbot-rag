@@ -1,0 +1,69 @@
+{
+  "checkedAt": "2026-11-03",
+  "policy": "Index only public material with a traceable official source. Verify export/API access and permitted refresh before automated collection.",
+  "sources": [
+    {
+      "id": "gokups-home",
+      "title": "GoKUPS public portal",
+      "url": "https://gokups.hutsos.kehutanan.go.id/",
+      "authority": "Kementerian Kehutanan",
+      "access": "public page",
+      "refresh": "verify public API or export before scheduling",
+      "status": "inventory complete, automated import pending"
+    },
+    {
+      "id": "gokups-records",
+      "title": "GoKUPS public Perhutanan Sosial register",
+      "url": "https://gokups.hutsos.kehutanan.go.id/public/society",
+      "authority": "Kementerian Kehutanan",
+      "access": "public page",
+      "refresh": "verify public API or export before scheduling",
+      "status": "inventory complete, automated import pending"
+    },
+    {
+      "id": "gokups-grading",
+      "title": "GoKUPS KUPS class chart",
+      "url": "https://gokups.hutsos.kehutanan.go.id/public/chart/grading",
+      "authority": "Kementerian Kehutanan",
+      "access": "public page",
+      "refresh": "verify public API or export before scheduling",
+      "status": "inventory complete, automated import pending"
+    },
+    {
+      "id": "gokups-commodity",
+      "title": "GoKUPS commodity chart",
+      "url": "https://gokups.hutsos.kehutanan.go.id/public/chart/commodity",
+      "authority": "Kementerian Kehutanan",
+      "access": "public page",
+      "refresh": "verify public API or export before scheduling",
+      "status": "inventory complete, automated import pending"
+    },
+    {
+      "id": "gokups-production",
+      "title": "GoKUPS product and production chart",
+      "url": "https://gokups.hutsos.kehutanan.go.id/public/chart/producing",
+      "authority": "Kementerian Kehutanan",
+      "access": "public page",
+      "refresh": "verify public API or export before scheduling",
+      "status": "inventory complete, automated import pending"
+    },
+    {
+      "id": "permenlhk-9-2021",
+      "title": "Permen LHK Nomor 9 Tahun 2021 tentang Pengelolaan Perhutanan Sosial",
+      "url": "https://jdih.menlhk.go.id/new2/uploads/files/2021pmlhk009_menlhk_06102021150537.pdf",
+      "authority": "JDIH Kementerian Lingkungan Hidup dan Kehutanan",
+      "access": "public document",
+      "refresh": "manual legal review when a new regulation or amendment is issued",
+      "status": "seeded KUPS, KPS, and Perhutanan Sosial definitions; review legal currency before production"
+    },
+    {
+      "id": "permenhut-18-2025",
+      "title": "Peraturan Menteri Kehutanan Nomor 18 Tahun 2025",
+      "url": "https://jdih.menlhk.go.id/kiosk/files/PERMENHUT_18_2025.pdf",
+      "authority": "JDIH Kementerian Kehutanan",
+      "access": "public document",
+      "refresh": "manual legal review when a new regulation or amendment is issued",
+      "status": "seeded broad class descriptions; not a scoring guide"
+    }
+  ]
+}
